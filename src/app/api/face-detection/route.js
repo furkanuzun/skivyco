@@ -4,7 +4,7 @@ import { OpenAI } from "openai";
 
 const openai = new OpenAI({
   apiKey:
-    "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",
+    "apikey",
 });
 
 export async function POST(request) {
