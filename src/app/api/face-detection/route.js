@@ -3,8 +3,7 @@ import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
 
 const openai = new OpenAI({
-  apiKey:
-    "apikey",
+  apiKey: process.env.OPEN_AI_API_KEY,
 });
 
 export async function POST(request) {
@@ -21,11 +20,18 @@ export async function POST(request) {
   formData.append("api_secret", API_SECRET);
   formData.append("image_url", image);
 
-  const response = await axios.post(API_URL, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const response = await axios
+    .post(API_URL, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => console.log("res", res))
+    .catch((err) => {
+      console.log("face++ err", err.response.data);
+      console.log("face++ msg", err?.message);
+      console.log("face++ datamsg", err?.response?.data?.message);
+    });
 
   const responseFromOpenAI = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -69,4 +75,8 @@ export async function POST(request) {
     data: response.data,
     openai: responseFromOpenAI,
   });
+}
+
+export async function GET(request) {
+  return NextResponse.json({ message: "Hello from GET" });
 }
