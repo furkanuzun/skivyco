@@ -6,6 +6,37 @@ const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_API_KEY,
 });
 
+const renderErrorMessage = (errorMessage) => {
+  let userFriendlyMessage;
+
+  if (errorMessage.includes("IMAGE_ERROR_UNSUPPORTED_FORMAT")) {
+    userFriendlyMessage =
+      "Yüklenen resim çözümleme için desteklenmeyen bir formatta veya dosya bozuk. Lütfen farklı bir dosya yükleyin.";
+  } else if (errorMessage === "NO_FACE_FOUND") {
+    userFriendlyMessage =
+      "Resimde yüz tespit edilemedi. Lütfen yüz içeren bir resim yükleyin.";
+  } else if (errorMessage === "INVALID_IMAGE_FACE") {
+    userFriendlyMessage =
+      "Yüklenen resim eksik veya birden fazla yüz içeriyor. Lütfen uygun bir resim yükleyin.";
+  } else if (errorMessage.startsWith("INVALID_IMAGE_SIZE")) {
+    userFriendlyMessage =
+      "Yüklenen resim boyutu gereksinimleri karşılamıyor. Resim çok büyük veya çok küçük olabilir.";
+  } else if (errorMessage === "INVALID_IMAGE_URL") {
+    userFriendlyMessage =
+      "Sağlanan resim URL'si hatalı veya geçersiz. Lütfen doğru bir URL sağlayın.";
+  } else if (errorMessage.startsWith("IMAGE_FILE_TOO_LARGE")) {
+    userFriendlyMessage =
+      "Yüklenen resim dosyası çok büyük. Bu API, 2 MB'den daha büyük dosyaları kabul etmiyor.";
+  } else if (errorMessage === "IMAGE_DOWNLOAD_TIMEOUT") {
+    userFriendlyMessage =
+      "Resim indirme işlemi zaman aşımına uğradı. Lütfen daha küçük bir dosya veya daha hızlı bir bağlantı kullanın.";
+  } else {
+    userFriendlyMessage = "Bilinmeyen bir hata oluştu. Lütfen tekrar deneyin.";
+  }
+
+  return userFriendlyMessage;
+};
+
 export async function POST(request) {
   // gelen data json, içerisinden image al
   const res = await request.json();
@@ -20,18 +51,17 @@ export async function POST(request) {
   formData.append("api_secret", API_SECRET);
   formData.append("image_url", image);
 
-  const response = await axios
-    .post(API_URL, formData, {
+  let response;
+  try {
+    response = await axios.post(API_URL, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    })
-    .then((res) => console.log("res", res))
-    .catch((err) => {
-      console.log("face++ err", err.response.data);
-      console.log("face++ msg", err?.message);
-      console.log("face++ datamsg", err?.response?.data?.message);
     });
+  } catch (error) {
+    const errorMessage = renderErrorMessage(error.response.data.error_message);
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
 
   const responseFromOpenAI = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -61,14 +91,6 @@ export async function POST(request) {
       },
     ],
   });
-
-  console.log(
-    "--responseFromOpenAI",
-    responseFromOpenAI.choices[0].message.content
-  );
-  //   res.status(200).json(response.data.choices[0].message.content);
-
-  // return response data to json
 
   return NextResponse.json({
     stauts: 200,

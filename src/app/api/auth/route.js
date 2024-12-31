@@ -36,6 +36,7 @@ export async function POST(request) {
       isPro: false,
       accessToken,
       refreshToken,
+      history: [],
     };
     const createdUser = await db
       .collection("users")
