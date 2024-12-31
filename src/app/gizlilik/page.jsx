@@ -1,8 +1,16 @@
+import Image from "next/image";
 import React from "react";
 
 export default function page() {
   return (
     <div className="container mx-auto px-4 md:px-0 py-10">
+      <Image
+        src="/icon.png"
+        alt="Skivy Logo"
+        width={200}
+        height={200}
+        className="mx-auto mb-10"
+      />
       <section>
         <h1>Skivy Uygulaması Gizlilik Politikası</h1>
         <h2>1. Giriş</h2>
@@ -65,7 +73,7 @@ export default function page() {
         <h2>8. İletişim</h2>
         <p>
           Gizlilik uygulamalarımız hakkında sorularınız varsa, lütfen{" "}
-          <a href="mailto:[email protected]">[email protected]</a> adresinden
+          <a href="mailto:info@skivy.co">info@skivy.co</a> adresinden
           bize ulaşın.
         </p>
       </section>

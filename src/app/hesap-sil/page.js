@@ -1,12 +1,13 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import styles from "./page.module.css";
+import Image from "next/image";
 
 export default function AccountDeleted() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [isDeleted, setIsDeleted] = useState(false);
 
   const handleSubmit = (e) => {
@@ -18,7 +19,7 @@ export default function AccountDeleted() {
   useEffect(() => {
     if (isDeleted) {
       const timer = setTimeout(() => {
-        router.push('/');
+        router.push("/");
       }, 5000);
       return () => clearTimeout(timer);
     }
@@ -27,9 +28,18 @@ export default function AccountDeleted() {
   if (isDeleted) {
     return (
       <div className={styles.container}>
+        <Image
+          src="/icon.png"
+          alt="Skivy Logo"
+          width={200}
+          height={200}
+          className="mx-auto mb-10"
+        />
         <div className={styles.content}>
           <h1>Hesap Silme Talebiniz Alındı</h1>
-          <p>Talebiniz sistemimize iletildi. En kısa sürede işleme alınacaktır.</p>
+          <p>
+            Talebiniz sistemimize iletildi. En kısa sürede işleme alınacaktır.
+          </p>
           <p>5 saniye içinde ana sayfaya yönlendirileceksiniz...</p>
         </div>
       </div>
@@ -38,11 +48,20 @@ export default function AccountDeleted() {
 
   return (
     <div className={styles.container}>
+      <Image
+        src="/icon.png"
+        alt="Skivy Logo"
+        width={200}
+        height={200}
+        className="mx-auto mb-10"
+      />
       <div className={styles.content}>
         <h1>Hesap Silme Talebi</h1>
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label htmlFor="email">Uygulamaya Kayıt Olduğunuz Mail Adresi</label>
+            <label htmlFor="email">
+              Uygulamaya Kayıt Olduğunuz Mail Adresi
+            </label>
             <input
               type="email"
               id="email"
